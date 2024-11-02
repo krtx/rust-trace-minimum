@@ -1,0 +1,29 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+         endpoint: 0.0.0.0:4317
+         max_recv_msg_size_mib: 10943040 # 適当
+
+exporters:
+  googlecloud:
+    trace:
+  debug:
+    verbosity: detailed
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_percentage: 65
+    spike_limit_percentage: 20
+  batch:
+  resourcedetection:
+    detectors: [gcp]
+    timeout: 10s
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [googlecloud]
